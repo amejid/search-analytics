@@ -1,6 +1,6 @@
 <h1 class="font-bold text-3xl mb-3">Movies</h1>
 
-<%= form_with(url: articles_path, method: :get, data: { controller: "search-form", turbo_frame: "articles" }) do |form| %>
+<%= form_with(url: articles_path, method: :get, data: { controller: "search-form", turbo_frame: "articles", turbo_action: "advance" }) do |form| %>
   <%= form.label :query, "Search by movie title:", class: "block mb-2" %>
   <%= form.text_field :query, autocomplete: :off, class: "py-3 px-4 rounded border ring-0 focus:ring-4 focus:ring-orange-100 focus:shadow-none focus:border-orange-500 focus:outline-none", data: { action: "input->search-form#search" } %>
 <% end %>

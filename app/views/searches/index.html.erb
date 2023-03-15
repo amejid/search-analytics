@@ -1,0 +1,16 @@
+<h1 class="font-bold text-3xl mb-3">Top 20 Searches</h1>
+
+<div id="searches" class="relative overflow-x-auto">
+  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <tr>
+      <th scope="col" class="px-6 py-3">Query</th>
+      <th scope="col" class="px-6 py-3">Number of times searched</th>
+    </tr>
+    </thead>
+    <tbody>
+    <%= render @searches %>
+    </tbody>
+  </table>
+</div>
+

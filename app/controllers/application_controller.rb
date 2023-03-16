@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!, :turbo_frame_request_variant
+  before_action :turbo_frame_request_variant
 
   private
 

@@ -1,25 +1,26 @@
 require 'rails_helper'
 
-RSpec.describe 'Searches controller', type: :request do
-  before(:example) do
-    user = User.create(email: 'test@mail.com', password: '123456')
-    sign_in user
-
-    (1..30).each do |a|
-      Search.create(
-        query: "Item #{a}",
-        user_id: user.id
-      )
+RSpec.describe 'Searches', type: :request do
+  describe 'GET /searches' do
+    before do
+      @user = User.create(ip_address: '127.0.0.1')
+      30.times { |i| Search.create(query: "search #{i}", user: @user) }
     end
-  end
 
-  it 'renders top 20 searches' do
-    get searches_path
+    it 'renders the index template' do
+      get searches_path
+      expect(response).to render_template(:index)
+    end
 
-    expect(response).to have_http_status(:ok)
+    it 'assigns the correct searches to @searches' do
+      get searches_path
+      expect(assigns(:searches).size).to eq(20)
+      expect(assigns(:searches).first.query).to eq('search 20')
+    end
 
-    expect(response).to render_template(:index)
-
-    expect(response.body).to include('Item 2')
+    it 'returns a successful response' do
+      get searches_path
+      expect(response).to have_http_status(:success)
+    end
   end
 end

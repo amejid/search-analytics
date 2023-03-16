@@ -1,24 +1,27 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  context 'Validations' do
-    it 'returns error if email is empty' do
-      user = User.new(password: '123456')
-      expect(user.valid?).to eq false
+  describe 'validations' do
+    User.destroy_all
+    subject { described_class.new(ip_address: '127.0.0.1') }
+
+    it 'is valid with valid attributes' do
+      expect(subject).to be_valid
     end
 
-    it 'returns error if password is empty' do
-      user = User.new(email: 'test@mail.com')
-      expect(user.valid?).to eq false
+    it 'is not valid without an ip_address' do
+      subject.ip_address = nil
+      expect(subject).to_not be_valid
     end
 
-    it 'creates a user if both inputs are provided' do
-      user = User.new(email: 'test@mail.com', password: '123456')
-      expect(user.valid?).to eq true
+    it 'is not valid with a duplicate ip_address' do
+      subject.save
+      duplicate_user = described_class.new(ip_address: '127.0.0.1')
+      expect(duplicate_user).to_not be_valid
     end
   end
 
-  context 'Associations' do
+  describe 'associations' do
     it 'has many searches' do
       user = User.reflect_on_association('searches')
       expect(user.macro).to eq(:has_many)

@@ -1,34 +1,57 @@
 require 'rails_helper'
 
-RSpec.describe 'Articles controller', type: :request do
-  before(:example) do
-    user = User.create(email: 'test@mail.com', password: '123456')
-    sign_in user
+RSpec.describe ArticlesController, type: :request do
+  describe 'GET #index' do
+    let!(:article1) { Article.create(title: 'Test Article 1') }
+    let!(:article2) { Article.create(title: 'Test Article 2') }
+    let!(:article3) { Article.create(title: 'Test Article 3') }
+    let!(:article4) { Article.create(title: 'Test Article 4') }
 
-    (1..100).each do |a|
-      Article.create(
-        title: "Item #{a}"
-      )
+    before(:example) do
+      @current_user = User.create(ip_address: '127.0.0.1')
     end
-  end
 
-  it 'renders 50 articles' do
-    get root_path
+    context 'when a query is present' do
+      let(:query) { 'Test Article 1' }
 
-    expect(response).to have_http_status(:ok)
+      before do
+        get articles_path, params: { query: }
+      end
 
-    expect(response).to render_template(:index)
+      it 'returns a success response' do
+        expect(response).to be_successful
+      end
 
-    expect(response.body).to include('Item 2')
-  end
+      it 'returns articles matching the query' do
+        expect(response.body).to include(article1.title)
+      end
 
-  it 'does not render more than 50 articles' do
-    get root_path
+      it 'does not return articles not matching the query' do
+        expect(response.body).not_to include(article2.title)
+        expect(response.body).not_to include(article3.title)
+        expect(response.body).not_to include(article4.title)
+      end
+    end
 
-    expect(response).to have_http_status(:ok)
+    context 'when a query is not present' do
+      before do
+        get articles_path
+      end
 
-    expect(response).to render_template(:index)
+      it 'returns a success response' do
+        expect(response).to be_successful
+      end
 
-    expect(response.body).not_to include('Item 87')
+      it 'returns all articles' do
+        expect(response.body).to include(article1.title)
+        expect(response.body).to include(article2.title)
+        expect(response.body).to include(article3.title)
+        expect(response.body).to include(article4.title)
+      end
+
+      it 'does not save a search query' do
+        expect(@current_user.searches).to be_empty
+      end
+    end
   end
 end

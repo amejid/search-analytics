@@ -1,29 +1,33 @@
 require 'rails_helper'
 
 RSpec.describe Search, type: :model do
-  before(:example) do
-    @user = User.create(email: 'test@mail.com', password: '123456')
+  describe 'validations' do
+    subject { described_class.new(query: 'Sample Query', user: User.new(ip_address: '127.0.0.1')) }
+
+    it 'is valid with valid attributes' do
+      expect(subject).to be_valid
+    end
+
+    it 'is not valid without a query' do
+      subject.query = nil
+      expect(subject).to_not be_valid
+    end
+
+    it 'is not valid with a query shorter than 3 characters' do
+      subject.query = 'a' * 2
+      expect(subject).to_not be_valid
+    end
+
+    it 'is not valid with a query longer than 50 characters' do
+      subject.query = 'a' * 51
+      expect(subject).to_not be_valid
+    end
   end
 
-  context 'Validations' do
-    it 'returns error if query is less than 3 characters' do
-      search = Search.new(query: 'Hw', user_id: @user.id)
-      expect(search.valid?).to eq false
-    end
-
-    it 'returns error if query is more than 50 characters' do
-      search = Search.new(query: 'ab' * 27, user_id: @user.id)
-      expect(search.valid?).to eq false
-    end
-
-    it 'returns error if user is not specified' do
-      search = Search.new(query: 'Hwewewaeas')
-      expect(search.valid?).to eq false
-    end
-
-    it 'returns success if title is more than 3 characters' do
-      search = Search.new(query: 'Hwewewaeas', user_id: @user.id)
-      expect(search.valid?).to eq true
+  describe 'associations' do
+    it 'belongs to a user' do
+      search = Search.reflect_on_association('user')
+      expect(search.macro).to eq(:belongs_to)
     end
   end
 end

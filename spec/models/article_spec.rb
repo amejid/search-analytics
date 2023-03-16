@@ -1,20 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe Article, type: :model do
-  context 'Validations' do
-    it 'returns error if title is less than 3 characters' do
-      article = Article.new(title: 'Hw')
-      expect(article.valid?).to eq false
+  describe 'validations' do
+    subject { described_class.new(title: 'Sample Title') }
+
+    it 'is valid with valid attributes' do
+      expect(subject).to be_valid
     end
 
-    it 'returns error if title is more than 50 characters' do
-      article = Article.new(title: 'ab' * 27)
-      expect(article.valid?).to eq false
+    it 'is not valid without a title' do
+      subject.title = nil
+      expect(subject).to_not be_valid
     end
 
-    it 'returns success if title is more than 3 characters' do
-      article = Article.new(title: 'Hwewewaeas')
-      expect(article.valid?).to eq true
+    it 'is not valid with a title shorter than 3 characters' do
+      subject.title = 'a' * 2
+      expect(subject).to_not be_valid
+    end
+
+    it 'is not valid with a title longer than 50 characters' do
+      subject.title = 'a' * 51
+      expect(subject).to_not be_valid
     end
   end
 end
